@@ -1,11 +1,85 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Cloud Trigonometric Evaluation Service</title>
+<title>Cloud Trigonometric Evaluation Service</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+    font-family: Arial;
+    background:#f2f2f2;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.container{
+    background:white;
+    padding:30px;
+    width:450px;
+    border-radius:10px;
+    box-shadow:0px 0px 10px rgba(0,0,0,0.1);
+}
+
+h2{
+    text-align:center;
+}
+
+input, select{
+    width:100%;
+    padding:8px;
+    margin-top:5px;
+}
+
+button{
+    width:100%;
+    padding:10px;
+    background:#28a745;
+    color:white;
+    border:none;
+    border-radius:5px;
+    margin-top:10px;
+}
+
+button:hover{
+    background:#218838;
+}
+
+.result{
+    margin-top:20px;
+    font-size:18px;
+    font-weight:bold;
+    text-align:center;
+}
+
+table{
+    width:100%;
+    margin-top:20px;
+    border-collapse:collapse;
+}
+
+table, th, td{
+    border:1px solid #ddd;
+}
+
+th, td{
+    padding:8px;
+    text-align:center;
+}
+
+</style>
+
 </head>
+
 <body>
 
-<h2>Cloud Based Trigonometric Evaluation</h2>
+<div class="container">
+
+<h2>Cloud Trigonometric Evaluation</h2>
 
 <label>Enter Value:</label>
 <input type="number" id="value" placeholder="Enter number">
@@ -14,41 +88,128 @@
 
 <label>Select Operation:</label>
 <select id="operation">
-    <option value="sin">Sin</option>
-    <option value="cos">Cos</option>
-    <option value="tan">Tan</option>
+<option value="sin">Sin</option>
+<option value="cos">Cos</option>
+<option value="tan">Tan</option>
+<option value="sqrt">Square Root</option>
+<option value="log">Log</option>
 </select>
 
 <br><br>
 
 <label>Select Mode:</label>
 <select id="mode">
-    <option value="degree">Degree</option>
-    <option value="radian">Radian</option>
+<option value="degree">Degree</option>
+<option value="radian">Radian</option>
 </select>
 
 <br><br>
 
 <button onclick="calculate()">Calculate</button>
 
-<h3 id="result"></h3>
+<button onclick="loadHistory()">Show History</button>
+
+<button onclick="plotGraph()">Plot Graph</button>
+
+<div class="result" id="result"></div>
+
+<canvas id="graph" height="200"></canvas>
+
+<table id="historyTable">
+<thead>
+<tr>
+<th>Operation</th>
+<th>Value</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+</div>
 
 <script>
-function calculate() {
-    let value = document.getElementById("value").value;
-    let op = document.getElementById("operation").value;
-    let mode = document.getElementById("mode").value;
 
-    fetch(`/api/v1/evaluate?op=${op}&value=${value}&mode=${mode}`)
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById("result").innerText =
-                "Result: " + data.result;
-        })
-        .catch(error => {
-            document.getElementById("result").innerText = "Error occurred";
-        });
+function calculate(){
+
+let value=document.getElementById("value").value
+let op=document.getElementById("operation").value
+let mode=document.getElementById("mode").value
+
+fetch(`/api/v1/evaluate?op=${op}&value=${value}&mode=${mode}`)
+.then(res=>res.json())
+.then(data=>{
+
+document.getElementById("result").innerText="Result: "+data.result
+
+})
+
 }
+
+function loadHistory(){
+
+fetch("/api/v1/history")
+.then(res=>res.json())
+.then(data=>{
+
+let table=document.querySelector("#historyTable tbody")
+table.innerHTML=""
+
+data.forEach(item=>{
+
+let row=`<tr>
+<td>${item.operation}</td>
+<td>${item.value}</td>
+<td>${item.result}</td>
+</tr>`
+
+table.innerHTML+=row
+
+})
+
+})
+
+}
+
+function plotGraph(){
+
+let op=document.getElementById("operation").value
+
+let labels=[]
+let data=[]
+
+for(let i=0;i<=360;i+=10){
+
+labels.push(i)
+
+let x=i*Math.PI/180
+let y
+
+if(op==="sin") y=Math.sin(x)
+if(op==="cos") y=Math.cos(x)
+if(op==="tan") y=Math.tan(x)
+
+data.push(y)
+
+}
+
+let ctx=document.getElementById("graph")
+
+new Chart(ctx,{
+type:'line',
+data:{
+labels:labels,
+datasets:[{
+label:op+" graph",
+data:data,
+borderColor:'blue',
+fill:false
+}]
+}
+})
+
+}
+
 </script>
 
 </body>
