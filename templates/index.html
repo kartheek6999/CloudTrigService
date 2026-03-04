@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cloud Trigonometric Evaluation Service</title>
+</head>
+<body>
+
+<h2>Cloud Based Trigonometric Evaluation</h2>
+
+<label>Enter Value:</label>
+<input type="number" id="value" placeholder="Enter number">
+
+<br><br>
+
+<label>Select Operation:</label>
+<select id="operation">
+    <option value="sin">Sin</option>
+    <option value="cos">Cos</option>
+    <option value="tan">Tan</option>
+</select>
+
+<br><br>
+
+<label>Select Mode:</label>
+<select id="mode">
+    <option value="degree">Degree</option>
+    <option value="radian">Radian</option>
+</select>
+
+<br><br>
+
+<button onclick="calculate()">Calculate</button>
+
+<h3 id="result"></h3>
+
+<script>
+function calculate() {
+    let value = document.getElementById("value").value;
+    let op = document.getElementById("operation").value;
+    let mode = document.getElementById("mode").value;
+
+    fetch(`/api/v1/evaluate?op=${op}&value=${value}&mode=${mode}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("result").innerText =
+                "Result: " + data.result;
+        })
+        .catch(error => {
+            document.getElementById("result").innerText = "Error occurred";
+        });
+}
+</script>
+
+</body>
+</html>
