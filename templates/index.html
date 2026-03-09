@@ -107,9 +107,17 @@ th, td{
 
 <button onclick="calculate()">Calculate</button>
 
+<button onclick="plotGraph()">Show Graph</button>
+
+<hr>
+
+<h3>Advanced Trigonometric Expression</h3>
+
+<input type="text" id="expression" placeholder="Example: tan(30)^2+sin(30)">
+
+<button onclick="solveExpression()">Solve Expression</button>
+
 <button onclick="loadHistory()">Show History</button>
-
-
 
 <div class="result" id="result"></div>
 
@@ -146,6 +154,22 @@ document.getElementById("result").innerText="Result: "+data.result
 
 }
 
+
+function solveExpression(){
+
+let expr=document.getElementById("expression").value
+
+fetch(`/api/v1/expression?expr=${expr}`)
+.then(res=>res.json())
+.then(data=>{
+
+document.getElementById("result").innerText="Result: "+data.result
+
+})
+
+}
+
+
 function loadHistory(){
 
 fetch("/api/v1/history")
@@ -159,7 +183,7 @@ data.forEach(item=>{
 
 let row=`<tr>
 <td>${item.operation}</td>
-<td>${item.value}</td>
+<td>${item.value || item.expression}</td>
 <td>${item.result}</td>
 </tr>`
 
@@ -170,6 +194,7 @@ table.innerHTML+=row
 })
 
 }
+
 
 function plotGraph(){
 
