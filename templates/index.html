@@ -84,8 +84,6 @@ th, td{
 <label>Enter Value:</label>
 <input type="number" id="value" placeholder="Enter number">
 
-<br><br>
-
 <label>Select Operation:</label>
 <select id="operation">
 <option value="sin">Sin</option>
@@ -95,25 +93,21 @@ th, td{
 <option value="log">Log</option>
 </select>
 
-<br><br>
-
 <label>Select Mode:</label>
 <select id="mode">
 <option value="degree">Degree</option>
 <option value="radian">Radian</option>
 </select>
 
-<br><br>
-
 <button onclick="calculate()">Calculate</button>
-
 <button onclick="plotGraph()">Show Graph</button>
 
 <hr>
 
 <h3>Advanced Trigonometric Expression</h3>
 
-<input type="text" id="expression" placeholder="Example: tan(30)^2+sin(30)">
+<input type="text" id="expression"
+placeholder="Example: tan(30)^2 + sin(30)">
 
 <button onclick="solveExpression()">Solve Expression</button>
 
@@ -154,12 +148,12 @@ document.getElementById("result").innerText="Result: "+data.result
 
 }
 
-
 function solveExpression(){
 
 let expr=document.getElementById("expression").value
+let mode=document.getElementById("mode").value
 
-fetch(`/api/v1/expression?expr=${expr}`)
+fetch(`/api/v1/expression?expr=${expr}&mode=${mode}`)
 .then(res=>res.json())
 .then(data=>{
 
@@ -168,7 +162,6 @@ document.getElementById("result").innerText="Result: "+data.result
 })
 
 }
-
 
 function loadHistory(){
 
@@ -194,7 +187,6 @@ table.innerHTML+=row
 })
 
 }
-
 
 function plotGraph(){
 

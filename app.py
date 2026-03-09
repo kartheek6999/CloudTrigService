@@ -18,29 +18,23 @@ def solve_expression(expr, mode="degree"):
 
     expr = expr.replace("^", "**")
 
-    def sin_replace(match):
+    def trig_replace(match, func):
         val = float(match.group(1))
         if mode == "degree":
             val = math.radians(val)
-        return str(math.sin(val))
+        return str(func(val))
 
-    def cos_replace(match):
-        val = float(match.group(1))
-        if mode == "degree":
-            val = math.radians(val)
-        return str(math.cos(val))
+    # Trigonometric replacements
+    expr = re.sub(r"sin\((.*?)\)", lambda m: trig_replace(m, math.sin), expr)
+    expr = re.sub(r"cos\((.*?)\)", lambda m: trig_replace(m, math.cos), expr)
+    expr = re.sub(r"tan\((.*?)\)", lambda m: trig_replace(m, math.tan), expr)
 
-    def tan_replace(match):
-        val = float(match.group(1))
-        if mode == "degree":
-            val = math.radians(val)
-        return str(math.tan(val))
-
-    expr = re.sub(r"sin\((.*?)\)", sin_replace, expr)
-    expr = re.sub(r"cos\((.*?)\)", cos_replace, expr)
-    expr = re.sub(r"tan\((.*?)\)", tan_replace, expr)
+    # Other math functions
+    expr = re.sub(r"sqrt\((.*?)\)", lambda m: str(math.sqrt(float(m.group(1)))), expr)
+    expr = re.sub(r"log\((.*?)\)", lambda m: str(math.log(float(m.group(1)))), expr)
 
     return eval(expr)
+
 
 # -------------------------
 # Home Page
@@ -158,6 +152,13 @@ def docs():
 
     <h3>Complex Expression</h3>
     /api/v1/expression?expr=tan(30)^2+sin(30)
+
+    <h3>Examples</h3>
+
+    tan(30)^2 + sin(30)
+    sin(30) + cos(60)
+    sqrt(25) + sin(30)
+    log(10) + cos(60)
 
     <h3>Operations Supported</h3>
     sin cos tan sqrt log
